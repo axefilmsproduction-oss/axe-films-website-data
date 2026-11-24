@@ -1,0 +1,30 @@
+# Large video files - too large for standard GitHub (use Google Drive / Vimeo for these)
+# To push videos, install Git LFS: https://git-lfs.com
+*.mp4
+*.MP4
+*.mov
+*.MOV
+*.avi
+*.AVI
+
+# Audio files
+*.mp3
+*.wav
+
+# macOS system files
+.DS_Store
+._*
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows system files
+Thumbs.db
+desktop.ini
+
+# Temp files
+*.tmp
+*.temp
+
+# Fetched/temp skill files
+fetched_skill.md
