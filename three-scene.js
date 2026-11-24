@@ -2,8 +2,9 @@
  * AXE FILMS — BESPOKE 3D THREE.JS APERTURE & FRAME ENGINE
  * Concept: "From Frame to Film"
  * 
- * Creates a high-end sculptural 3D camera aperture and stylized 'X' emblem
- * that connects the opening loading sequence seamlessly into the hero environment.
+ * Frame-rate independent, silky-smooth WebGL animation.
+ * Features 8 architectural iris blades, intersecting 'X' cinema frame beams,
+ * and cinematic projector dust volume.
  */
 
 class AxeThreeScene {
@@ -23,11 +24,12 @@ class AxeThreeScene {
     this.xBeams = [];
     this.particles = null;
     this.pointLight = null;
-    this.mouseX = 0;
-    this.mouseY = 0;
-    this.targetMouseX = 0;
-    this.targetMouseY = 0;
+    
+    // Smooth mouse coordinates with inertia
+    this.mouse = { x: 0, y: 0 };
+    this.targetMouse = { x: 0, y: 0 };
     this.scrollProgress = 0;
+    this.targetScroll = 0;
     this.isLoaded = false;
     this.clock = new THREE.Clock();
     this.animationFrameId = null;
@@ -66,41 +68,41 @@ class AxeThreeScene {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.2;
+    this.renderer.toneMappingExposure = 1.25;
 
     if (this.container) {
       this.container.appendChild(this.renderer.domElement);
     }
 
-    // 4. Lighting (Cinematic Studio Rig)
-    const ambientLight = new THREE.AmbientLight(0x1f0c0e, 1.4);
+    // 4. Lighting Rig
+    const ambientLight = new THREE.AmbientLight(0x1f0c0e, 1.6);
     this.scene.add(ambientLight);
 
-    // Crimson key light
-    this.pointLight = new THREE.PointLight(0xe62323, 4.5, 25);
+    // Dynamic Crimson Key Light
+    this.pointLight = new THREE.PointLight(0xe62323, 4.8, 28);
     this.pointLight.position.set(2, 3, 5);
     this.scene.add(this.pointLight);
 
-    // Cold rim light for metallic edge highlights
-    const rimLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    // Cold Rim Light for specular edges
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.2);
     rimLight.position.set(-6, 8, -4);
     this.scene.add(rimLight);
 
-    // Warm deep burgundy backlight
-    const backLight = new THREE.PointLight(0x821412, 3.0, 18);
+    // Deep Burgundy Fill
+    const backLight = new THREE.PointLight(0x821412, 3.2, 20);
     backLight.position.set(0, -4, -2);
     this.scene.add(backLight);
 
     // 5. Build Architectural Aperture & "X" Motif
     this.buildApertureAndXMotif();
 
-    // 6. Build Cinematic Projector Dust / Particle Field
+    // 6. Build Cinematic Dust / Projector Volume
     this.buildCinematicParticles();
 
     // 7. Event listeners
     this.bindEvents();
 
-    // 8. Start Render Loop
+    // 8. Start Loop
     this.animate();
   }
 
@@ -111,34 +113,33 @@ class AxeThreeScene {
     // Luxury metallic materials
     const obsidianMetalMat = new THREE.MeshStandardMaterial({
       color: 0x181214,
-      metalness: 0.92,
-      roughness: 0.22,
-      envMapIntensity: 1.5
+      metalness: 0.94,
+      roughness: 0.2,
+      envMapIntensity: 1.6
     });
 
     const crimsonEdgeMat = new THREE.MeshStandardMaterial({
       color: 0x821412,
       emissive: 0x4a0a09,
-      emissiveIntensity: 0.6,
-      metalness: 0.85,
-      roughness: 0.18
+      emissiveIntensity: 0.65,
+      metalness: 0.88,
+      roughness: 0.16
     });
 
     const luminousCoreMat = new THREE.MeshBasicMaterial({
       color: 0xe62323,
       wireframe: true,
       transparent: true,
-      opacity: 0.35
+      opacity: 0.4
     });
 
-    // A. Outer Cinema Aperture Blades (8-blade iris)
+    // A. 8-Blade Radial Camera Iris
     const bladeCount = 8;
     const irisRadius = 3.6;
 
     for (let i = 0; i < bladeCount; i++) {
       const angle = (i / bladeCount) * Math.PI * 2;
       
-      // Slanted architectural blade shape
       const bladeShape = new THREE.Shape();
       bladeShape.moveTo(0, 0);
       bladeShape.lineTo(2.2, 0.4);
@@ -158,7 +159,6 @@ class AxeThreeScene {
       const bladeGeo = new THREE.ExtrudeGeometry(bladeShape, extrudeSettings);
       const blade = new THREE.Mesh(bladeGeo, i % 2 === 0 ? obsidianMetalMat : crimsonEdgeMat);
 
-      // Positioning in ring
       const bladePivot = new THREE.Group();
       bladePivot.position.set(Math.cos(angle) * irisRadius, Math.sin(angle) * irisRadius, 0);
       bladePivot.rotation.z = angle + 0.4;
@@ -173,24 +173,22 @@ class AxeThreeScene {
       });
     }
 
-    // B. Iconic Stylized "X" Intersecting Frame Beams (Axe Films core mark)
-    const beamGeo = new THREE.BoxGeometry(0.7, 5.5, 0.25);
+    // B. Intersecting 'X' Cinema Beams (Axe Films signature)
+    const beamGeo = new THREE.BoxGeometry(0.7, 5.6, 0.25);
 
-    // Diagonal beam 1 (left to right)
     const beam1 = new THREE.Mesh(beamGeo, obsidianMetalMat);
     beam1.rotation.z = Math.PI / 4;
     beam1.position.z = 0.2;
     this.apertureGroup.add(beam1);
     this.xBeams.push(beam1);
 
-    // Diagonal beam 2 (right to left) with play-button faceted taper
     const beam2 = new THREE.Mesh(beamGeo, crimsonEdgeMat);
     beam2.rotation.z = -Math.PI / 4;
     beam2.position.z = 0.35;
     this.apertureGroup.add(beam2);
     this.xBeams.push(beam2);
 
-    // C. Optical Shutter Wireframe Ring
+    // C. Optical Shutter Wireframe Rings
     const ringGeo = new THREE.TorusGeometry(4.2, 0.03, 16, 64);
     const ring = new THREE.Mesh(ringGeo, luminousCoreMat);
     this.apertureGroup.add(ring);
@@ -199,44 +197,52 @@ class AxeThreeScene {
     const innerRing = new THREE.Mesh(innerRingGeo, luminousCoreMat);
     this.apertureGroup.add(innerRing);
 
-    // Position the entire motif in upper right viewport for heroic balance
-    this.apertureGroup.position.set(2.4, 0.8, -1);
-    this.apertureGroup.scale.set(0.85, 0.85, 0.85);
+    // Position in hero composition
+    this.setResponsivePosition();
+  }
+
+  setResponsivePosition() {
+    const width = window.innerWidth;
+    if (width < 768) {
+      this.apertureGroup.position.set(0, 1.2, -3);
+      this.apertureGroup.scale.set(0.55, 0.55, 0.55);
+    } else if (width < 1200) {
+      this.apertureGroup.position.set(1.5, 0.8, -1.5);
+      this.apertureGroup.scale.set(0.7, 0.7, 0.7);
+    } else {
+      this.apertureGroup.position.set(2.4, 0.8, -1);
+      this.apertureGroup.scale.set(0.85, 0.85, 0.85);
+    }
   }
 
   buildCinematicParticles() {
-    const particleCount = 450;
+    const particleCount = 500;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
-    const sizes = new Float32Array(particleCount);
 
     const color1 = new THREE.Color(0xe62323);
     const color2 = new THREE.Color(0xf2f2f2);
 
     for (let i = 0; i < particleCount; i++) {
-      // Spread across volume
-      positions[i * 3] = (Math.random() - 0.5) * 24;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 16;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 14;
+      positions[i * 3] = (Math.random() - 0.5) * 26;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 18;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 16;
 
-      // Color variation between crimson and soft white dust
-      const mixedColor = Math.random() > 0.35 ? color1 : color2;
+      const mixedColor = Math.random() > 0.4 ? color1 : color2;
       colors[i * 3] = mixedColor.r;
       colors[i * 3 + 1] = mixedColor.g;
       colors[i * 3 + 2] = mixedColor.b;
-
-      sizes[i] = Math.random() * 0.06 + 0.02;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 0.08,
+      size: 0.07,
       vertexColors: true,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.7,
       blending: THREE.AdditiveBlending
     });
 
@@ -248,14 +254,13 @@ class AxeThreeScene {
     window.addEventListener('resize', () => this.onWindowResize(), false);
 
     window.addEventListener('mousemove', (e) => {
-      // Normalized coordinates (-1 to 1)
-      this.targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
-      this.targetMouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+      this.targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      this.targetMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     });
 
     window.addEventListener('scroll', () => {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      this.scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      this.targetScroll = maxScroll > 0 ? window.scrollY / maxScroll : 0;
     }, { passive: true });
 
     document.addEventListener('visibilitychange', () => {
@@ -276,38 +281,26 @@ class AxeThreeScene {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
-
-    // Responsive scaling and positioning
-    if (width < 768) {
-      this.apertureGroup.position.set(0, 1.2, -3);
-      this.apertureGroup.scale.set(0.55, 0.55, 0.55);
-    } else if (width < 1200) {
-      this.apertureGroup.position.set(1.5, 0.8, -1.5);
-      this.apertureGroup.scale.set(0.7, 0.7, 0.7);
-    } else {
-      this.apertureGroup.position.set(2.4, 0.8, -1);
-      this.apertureGroup.scale.set(0.85, 0.85, 0.85);
-    }
+    this.setResponsivePosition();
   }
 
-  // Called when loader completes: dilates the aperture open
   triggerOpeningSequence() {
     this.isLoaded = true;
     if (!this.apertureGroup) return;
 
-    // Animate blades expanding outward (iris opening)
     const startTime = performance.now();
-    const duration = 1200;
+    const duration = 1400;
 
     const expandIris = (time) => {
       const elapsed = time - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      // Smooth cubic-bezier ease out
+      const ease = 1 - Math.pow(1 - progress, 3);
 
       this.blades.forEach((b) => {
         b.pivot.position.x = b.baseX * (1 + ease * 0.45);
         b.pivot.position.y = b.baseY * (1 + ease * 0.45);
-        b.pivot.rotation.z = b.baseAngle + 0.4 + (ease * 0.25);
+        b.pivot.rotation.z = b.baseAngle + 0.4 + (ease * 0.3);
       });
 
       if (progress < 1) {
@@ -318,10 +311,8 @@ class AxeThreeScene {
     requestAnimationFrame(expandIris);
   }
 
-  // Interactive lens f-stop simulation called by UI slider
   setApertureFStop(value) {
-    // value from 1.4 (wide open) to 22 (tight closed)
-    const normalized = (value - 1.4) / (22 - 1.4); // 0 (open) to 1 (closed)
+    const normalized = (value - 1.4) / (22 - 1.4);
     const dilation = 1.5 - (normalized * 0.85);
 
     this.blades.forEach((b) => {
@@ -341,30 +332,30 @@ class AxeThreeScene {
     const delta = this.clock.getDelta();
     const elapsedTime = this.clock.getElapsedTime();
 
-    // Smooth mouse lerping
-    this.mouseX += (this.targetMouseX - this.mouseX) * 0.05;
-    this.mouseY += (this.targetMouseY - this.mouseY) * 0.05;
+    // Frame-rate independent exponential smoothing
+    const lerpRate = 1 - Math.exp(-6 * delta);
+    this.mouse.x += (this.targetMouse.x - this.mouse.x) * lerpRate;
+    this.mouse.y += (this.targetMouse.y - this.mouse.y) * lerpRate;
+    this.scrollProgress += (this.targetScroll - this.scrollProgress) * lerpRate;
 
-    // Aperture gentle kinetic breathing & mouse tilt
     if (this.apertureGroup) {
-      this.apertureGroup.rotation.y = this.mouseX * 0.45 + (elapsedTime * 0.08);
-      this.apertureGroup.rotation.x = -this.mouseY * 0.35 + (Math.sin(elapsedTime * 0.5) * 0.05);
+      // Gentle cinematic breathing + mouse tilt
+      this.apertureGroup.rotation.y = this.mouse.x * 0.45 + (elapsedTime * 0.08);
+      this.apertureGroup.rotation.x = -this.mouse.y * 0.35 + (Math.sin(elapsedTime * 0.5) * 0.05);
       this.apertureGroup.rotation.z = Math.cos(elapsedTime * 0.3) * 0.04;
 
-      // Scroll parallax: translate and tilt as user scrolls through site
+      // Smooth scroll parallax translation
       this.apertureGroup.position.y = (0.8 - (this.scrollProgress * 4.5));
       this.apertureGroup.position.z = -1 - (this.scrollProgress * 3);
 
-      // Light tracks mouse slightly for dynamic specular highlights
       if (this.pointLight) {
-        this.pointLight.position.x = 2 + this.mouseX * 3;
-        this.pointLight.position.y = 3 + this.mouseY * 3;
+        this.pointLight.position.x = 2 + this.mouse.x * 3;
+        this.pointLight.position.y = 3 + this.mouse.y * 3;
       }
     }
 
-    // Floating particles drift
     if (this.particles) {
-      this.particles.rotation.y = elapsedTime * 0.02;
+      this.particles.rotation.y = elapsedTime * 0.025;
       this.particles.rotation.x = Math.sin(elapsedTime * 0.015) * 0.05;
     }
 
@@ -372,7 +363,6 @@ class AxeThreeScene {
   }
 }
 
-// Instantiate once DOM is ready
 window.addEventListener('DOMContentLoaded', () => {
   window.axeThree = new AxeThreeScene();
 });

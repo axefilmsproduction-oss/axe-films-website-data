@@ -1,10 +1,10 @@
 /**
  * AXE FILMS — MASTER FRONTEND ORCHESTRATOR
- * Implements Awwwards-grade motion, custom cursor, asset loading,
- * interactive project drawer, aperture simulator, and audio triggers.
+ * Upgraded for buttery-smooth Awwwards-grade motion, Lenis smooth scrolling,
+ * magnetic physics cursor, and accurate inline/modal video playback.
  */
 
-// 1. PROJECT DATA STORE (AUTHENTIC CLIENT WORK ONLY)
+// 1. AUTHENTIC PROJECT DATA STORE (VERIFIED PATHS)
 const AXE_PROJECTS = [
   {
     id: 'prestige',
@@ -25,7 +25,7 @@ const AXE_PROJECTS = [
       'Prestige/Images/IMG_2920.JPG',
       'Prestige/Images/IMG_2928.JPG'
     ],
-    videoRef: 'Reels/Reel 01. Manan Black.mp4'
+    videoRef: 'Prestige/Reels/Reel 01. Manan Black.mp4'
   },
   {
     id: 'elclassico',
@@ -79,7 +79,7 @@ const AXE_PROJECTS = [
     stills: [
       'Axefilms SMP 1-4-01.JPEG'
     ],
-    videoRef: 'AURA/ABDULLAH AZHAR x AURA.mp4'
+    videoRef: 'AURA x Groom.mp4'
   },
   {
     id: 'auor',
@@ -97,7 +97,7 @@ const AXE_PROJECTS = [
     stills: [
       'Axefilms SMP 1-4-02.JPEG'
     ],
-    videoRef: 'AUOR Supermarket/AUOR Grand Opening Revised.mp4'
+    videoRef: 'AUOR Supermarket/Date Night With AUOR 1.mp4'
   },
   {
     id: 'hashmi',
@@ -119,7 +119,6 @@ const AXE_PROJECTS = [
   }
 ];
 
-// 2. MAIN APPLICATION CLASS
 class AxeFilmsApp {
   constructor() {
     this.preloader = document.getElementById('preloader');
@@ -130,24 +129,35 @@ class AxeFilmsApp {
     this.worksContainer = document.getElementById('works-list-container');
     this.hoverPreview = document.querySelector('.hover-preview-card');
     this.theaterModal = document.getElementById('theater-modal');
+    this.theaterVideo = document.getElementById('theater-video-element');
+    this.theaterVideoSource = document.getElementById('theater-video-source');
+    this.theaterTitleText = document.getElementById('theater-title-text');
     this.projectDrawerModal = document.getElementById('project-drawer-modal');
     this.soundToggleBtn = document.getElementById('sound-toggle-btn');
     this.fstopSlider = document.getElementById('fstop-slider');
     this.fstopReadout = document.getElementById('fstop-readout');
 
+    // Smooth Cursor Physics
     this.mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    this.prevMouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     this.cursor = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    this.cursorVelocity = { x: 0, y: 0 };
 
+    this.lenis = null;
     this.init();
   }
 
   init() {
+    this.setupLenisSmoothScroll();
     this.startAssetLoadingSequence();
     this.setupMagneticCursor();
     this.renderWorksList(AXE_PROJECTS);
     this.setupWorksFilter();
     this.setupInteractiveHoverPreview();
     this.setupApertureSimulator();
+    this.setupInlineCaseStudyVideos();
+    this.setupVerticalReelHoverPreview();
+    this.setupInertialLookbookScroll();
     this.setupTheaterModal();
     this.setupSoundToggle();
     this.setupCommissionForm();
@@ -155,7 +165,26 @@ class AxeFilmsApp {
     this.startLiveStudioClock();
   }
 
-  // A. REAL ASSET LOADING SEQUENCE
+  // A. LENIS BUTTERY SMOOTH SCROLLING
+  setupLenisSmoothScroll() {
+    if (typeof Lenis !== 'undefined') {
+      this.lenis = new Lenis({
+        duration: 1.25,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.95
+      });
+
+      const raf = (time) => {
+        this.lenis.raf(time);
+        requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
+    }
+  }
+
+  // B. ASSET LOADING SEQUENCE & 3D APERTURE REVEAL
   startAssetLoadingSequence() {
     const criticalAssets = [
       'Axefilms SMP 1-4-01.JPEG',
@@ -167,11 +196,10 @@ class AxeFilmsApp {
     ];
 
     let loadedCount = 0;
-    const totalAssets = criticalAssets.length + 2; // + fonts + WebGL
-
+    const totalAssets = criticalAssets.length + 2;
     let displayProgress = 0;
+
     const progressInterval = setInterval(() => {
-      // Calculate genuine ratio
       const targetProgress = Math.min(Math.round((loadedCount / totalAssets) * 100), 100);
       
       if (displayProgress < targetProgress) {
@@ -182,55 +210,38 @@ class AxeFilmsApp {
 
       if (displayProgress >= 100) {
         clearInterval(progressInterval);
-        setTimeout(() => this.revealWebsite(), 400);
+        setTimeout(() => this.revealWebsite(), 350);
       }
-    }, 18);
+    }, 16);
 
-    // Track critical images
     criticalAssets.forEach((src) => {
       const img = new Image();
       img.onload = () => { loadedCount++; };
-      img.onerror = () => { loadedCount++; }; // Graceful recovery
+      img.onerror = () => { loadedCount++; };
       img.src = src;
     });
 
-    // Track fonts
     if (document.fonts) {
-      document.fonts.ready.then(() => {
-        loadedCount++;
-      }).catch(() => { loadedCount++; });
+      document.fonts.ready.then(() => { loadedCount++; }).catch(() => { loadedCount++; });
     } else {
       loadedCount++;
     }
 
-    // Track WebGL initialization
     setTimeout(() => { loadedCount++; }, 300);
-
-    // Guaranteed safety timeout (never wait more than 3.5s)
-    setTimeout(() => {
-      loadedCount = totalAssets;
-    }, 3200);
+    setTimeout(() => { loadedCount = totalAssets; }, 3000);
   }
 
   revealWebsite() {
-    if (window.soundEngine) {
-      window.soundEngine.playWhoosh();
-    }
+    if (window.soundEngine) window.soundEngine.playWhoosh();
+    if (window.axeThree) window.axeThree.triggerOpeningSequence();
+    if (this.preloader) this.preloader.classList.add('loaded');
 
-    if (window.axeThree) {
-      window.axeThree.triggerOpeningSequence();
-    }
-
-    if (this.preloader) {
-      this.preloader.classList.add('loaded');
-    }
-
-    // Trigger hero typography staggered entrance
+    // Trigger hero reveal
     const heroElements = document.querySelectorAll('.hero-badge, .hero-title .title-row, .hero-footer-row');
     heroElements.forEach((el, index) => {
       el.style.opacity = '0';
       el.style.transform = 'translateY(30px)';
-      el.style.transition = `all 0.9s cubic-bezier(0.16, 1, 0.3, 1) ${0.2 + index * 0.15}s`;
+      el.style.transition = `all 0.9s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + index * 0.12}s`;
       setTimeout(() => {
         el.style.opacity = '1';
         el.style.transform = 'translateY(0)';
@@ -238,37 +249,67 @@ class AxeFilmsApp {
     });
   }
 
-  // B. CUSTOM MAGNETIC CURSOR
+  // C. INERTIAL MAGNETIC CURSOR WITH KINETIC SQUISH & BUTTON MAGNETISM
   setupMagneticCursor() {
     window.addEventListener('mousemove', (e) => {
       this.mouse.x = e.clientX;
       this.mouse.y = e.clientY;
       if (this.cursorDot) {
-        this.cursorDot.style.left = `${this.mouse.x}px`;
-        this.cursorDot.style.top = `${this.mouse.y}px`;
+        this.cursorDot.style.transform = `translate3d(${this.mouse.x}px, ${this.mouse.y}px, 0)`;
       }
     });
 
+    // Inertial Follower Animation Loop
     const updateCursorFollower = () => {
-      this.cursor.x += (this.mouse.x - this.cursor.x) * 0.15;
-      this.cursor.y += (this.mouse.y - this.cursor.y) * 0.15;
+      this.cursorVelocity.x = this.mouse.x - this.prevMouse.x;
+      this.cursorVelocity.y = this.mouse.y - this.prevMouse.y;
+      this.prevMouse.x = this.mouse.x;
+      this.prevMouse.y = this.mouse.y;
+
+      const speed = Math.hypot(this.cursorVelocity.x, this.cursorVelocity.y);
+      const angle = Math.atan2(this.cursorVelocity.y, this.cursorVelocity.x);
+
+      // Smooth lerp
+      this.cursor.x += (this.mouse.x - this.cursor.x) * 0.18;
+      this.cursor.y += (this.mouse.y - this.cursor.y) * 0.18;
 
       if (this.cursorFollower) {
-        this.cursorFollower.style.left = `${this.cursor.x}px`;
-        this.cursorFollower.style.top = `${this.cursor.y}px`;
+        // Kinetic stretch along velocity
+        const scaleX = 1 + Math.min(speed * 0.012, 0.45);
+        const scaleY = 1 - Math.min(speed * 0.01, 0.3);
+
+        this.cursorFollower.style.transform = `translate3d(${this.cursor.x}px, ${this.cursor.y}px, 0) translate(-50%, -50%) rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
       }
+
       requestAnimationFrame(updateCursorFollower);
     };
     requestAnimationFrame(updateCursorFollower);
 
-    // Add hover states to interactive targets
+    // True Magnetic Attraction on Buttons
+    const magneticElements = document.querySelectorAll('.hero-play-reel-btn, .cta-header-btn, .filter-btn, .submit-commission-btn, .case-play-btn, .sound-toggle-btn');
+    magneticElements.forEach((el) => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const dx = (e.clientX - centerX) * 0.3;
+        const dy = (e.clientY - centerY) * 0.3;
+        el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+      });
+
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = 'translate3d(0, 0, 0)';
+      });
+    });
+
+    // Cursor States
     document.addEventListener('mouseover', (e) => {
-      const target = e.target.closest('a, button, .work-row, .lookbook-photo-card, .scope-pill, input, textarea');
+      const target = e.target.closest('a, button, .work-row, .lookbook-photo-card, .reel-card, .scope-pill, .case-video-box');
       if (target) {
         if (target.classList.contains('work-row') || target.classList.contains('lookbook-photo-card')) {
           this.cursorFollower.classList.add('hover-interactive');
           this.cursorFollower.textContent = 'EXPLORE';
-        } else if (target.classList.contains('hero-play-reel-btn')) {
+        } else if (target.classList.contains('hero-play-reel-btn') || target.classList.contains('case-video-box') || target.classList.contains('reel-card')) {
           this.cursorFollower.classList.add('hover-interactive');
           this.cursorFollower.textContent = 'PLAY';
         } else {
@@ -280,7 +321,7 @@ class AxeFilmsApp {
     });
 
     document.addEventListener('mouseout', (e) => {
-      const target = e.target.closest('a, button, .work-row, .lookbook-photo-card, .scope-pill');
+      const target = e.target.closest('a, button, .work-row, .lookbook-photo-card, .reel-card, .scope-pill, .case-video-box');
       if (target && this.cursorFollower) {
         this.cursorFollower.classList.remove('hover-interactive', 'hover-link');
         this.cursorFollower.textContent = '';
@@ -288,7 +329,7 @@ class AxeFilmsApp {
     });
   }
 
-  // C. RENDER WORKS LIST & FILTER
+  // D. RENDER WORKS LIST & FILTER
   renderWorksList(projects) {
     if (!this.worksContainer) return;
     this.worksContainer.innerHTML = '';
@@ -299,6 +340,7 @@ class AxeFilmsApp {
       row.dataset.id = proj.id;
       row.dataset.category = proj.category;
       row.dataset.thumbnail = proj.thumbnail;
+      row.dataset.video = proj.videoRef;
       row.dataset.tag = proj.previewTag;
 
       row.innerHTML = `
@@ -342,7 +384,7 @@ class AxeFilmsApp {
     });
   }
 
-  // D. MELON.STUDIO SIGNATURE FLOATING HOVER PREVIEW
+  // E. MELON.STUDIO SIGNATURE FLOATING HOVER PREVIEW
   setupInteractiveHoverPreview() {
     if (!this.hoverPreview) return;
     const previewImg = this.hoverPreview.querySelector('img');
@@ -351,11 +393,10 @@ class AxeFilmsApp {
     let previewPos = { x: 0, y: 0 };
 
     document.addEventListener('mousemove', (e) => {
-      previewPos.x += (e.clientX + 30 - previewPos.x) * 0.2;
-      previewPos.y += (e.clientY - 120 - previewPos.y) * 0.2;
+      previewPos.x += (e.clientX + 30 - previewPos.x) * 0.25;
+      previewPos.y += (e.clientY - 120 - previewPos.y) * 0.25;
 
-      this.hoverPreview.style.left = `${previewPos.x}px`;
-      this.hoverPreview.style.top = `${previewPos.y}px`;
+      this.hoverPreview.style.transform = `translate3d(${previewPos.x}px, ${previewPos.y}px, 0) translate(-50%, -50%)`;
     });
 
     document.addEventListener('mouseover', (e) => {
@@ -375,25 +416,179 @@ class AxeFilmsApp {
     });
   }
 
-  // E. PROJECT DETAIL DRAWER / MODAL
+  // F. ACCURATE INLINE VIDEO PLAYERS FOR CASE STUDIES
+  setupInlineCaseStudyVideos() {
+    const caseBoxes = document.querySelectorAll('.case-video-box');
+    caseBoxes.forEach((box) => {
+      const video = box.querySelector('video');
+      const trigger = box.querySelector('.case-video-overlay-trigger');
+
+      if (video && trigger) {
+        trigger.addEventListener('click', () => {
+          if (video.paused) {
+            // Pause any other playing video first
+            document.querySelectorAll('video').forEach((v) => {
+              if (v !== video && !v.classList.contains('hero-bg-video')) v.pause();
+            });
+            video.play().catch(() => {});
+            box.classList.add('playing');
+            if (window.soundEngine) window.soundEngine.playShutter();
+          } else {
+            video.pause();
+            box.classList.remove('playing');
+          }
+        });
+
+        video.addEventListener('ended', () => {
+          box.classList.remove('playing');
+        });
+      }
+    });
+  }
+
+  // G. VERTICAL 9:16 REEL HOVER PREVIEWS
+  setupVerticalReelHoverPreview() {
+    const reelCards = document.querySelectorAll('.reel-card');
+    reelCards.forEach((card) => {
+      const video = card.querySelector('.reel-video');
+      if (!video) return;
+
+      card.addEventListener('mouseenter', () => {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      });
+
+      card.addEventListener('mouseleave', () => {
+        video.pause();
+      });
+
+      card.addEventListener('click', () => {
+        const videoSrc = card.dataset.video;
+        const title = card.querySelector('.reel-title')?.textContent || 'PRESTIGE COUTURE REEL';
+        this.openTheaterWithFilm(videoSrc, title);
+      });
+    });
+  }
+
+  // H. INERTIAL HORIZONTAL DRAG-TO-SCROLL LOOKBOOK
+  setupInertialLookbookScroll() {
+    const container = document.getElementById('lookbook-strip-container');
+    if (!container) return;
+
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    container.addEventListener('mousedown', (e) => {
+      isDown = true;
+      container.classList.add('is-dragging');
+      startX = e.pageX - container.offsetLeft;
+      scrollLeft = container.scrollLeft;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      isDown = false;
+      container.classList.remove('is-dragging');
+    });
+
+    container.addEventListener('mouseup', () => {
+      isDown = false;
+      container.classList.remove('is-dragging');
+    });
+
+    container.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX) * 1.8; // scroll multiplier
+      container.scrollLeft = scrollLeft - walk;
+    });
+  }
+
+  // I. THEATER SHOWREEL MODAL & MULTI-FILM SWITCHER
+  setupTheaterModal() {
+    const playBtns = document.querySelectorAll('.hero-play-reel-btn, .open-showreel-action');
+    const closeBtn = document.getElementById('theater-close-btn');
+
+    playBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.openTheaterWithFilm('Fun Forest.mp4', 'FUN FOREST MULTAN · COMMERCIAL SOUND DESIGN');
+      });
+    });
+
+    // Multi-film playlist channel buttons
+    const channelBtns = document.querySelectorAll('.playlist-channel-btn');
+    channelBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        channelBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const src = btn.dataset.src;
+        const title = btn.dataset.title;
+        this.switchTheaterVideo(src, title);
+      });
+    });
+
+    const closeModal = () => {
+      if (this.theaterModal) {
+        this.theaterModal.classList.remove('active');
+        document.body.style.overflow = '';
+        if (this.theaterVideo) this.theaterVideo.pause();
+        if (window.soundEngine) window.soundEngine.playShutter();
+      }
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        this.closeProjectDrawer();
+      }
+    });
+  }
+
+  openTheaterWithFilm(src, title) {
+    if (!this.theaterModal) return;
+    this.switchTheaterVideo(src, title);
+    this.theaterModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    if (window.soundEngine) window.soundEngine.playWhoosh();
+  }
+
+  switchTheaterVideo(src, title) {
+    if (this.theaterTitleText) this.theaterTitleText.textContent = `AXE FILMS · ${title}`;
+    if (this.theaterVideoSource && this.theaterVideo) {
+      this.theaterVideoSource.src = src;
+      this.theaterVideo.load();
+      this.theaterVideo.play().catch(() => {});
+    }
+  }
+
+  // J. PROJECT DETAIL DRAWER WITH EMBEDDED CINEMA VIDEO
   openProjectDrawer(proj) {
     if (!this.projectDrawerModal) return;
-
     if (window.soundEngine) window.soundEngine.playWhoosh();
 
     const drawerBody = this.projectDrawerModal.querySelector('.drawer-body-content');
     if (drawerBody) {
       drawerBody.innerHTML = `
-        <div class="drawer-header-row">
+        <div class="drawer-header-row" style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2.5rem; border-bottom:1px solid var(--color-border); padding-bottom:1.5rem;">
           <div>
             <span class="case-subtitle">${proj.client} · ${proj.year}</span>
-            <h2 class="case-headline">${proj.title}</h2>
+            <h2 class="case-headline" style="font-size:2.8rem; margin-bottom:0.5rem;">${proj.title}</h2>
+            <p style="font-family:var(--font-accent); color:var(--color-crimson-bright); font-size:1.1rem;">"${proj.headline}"</p>
           </div>
-          <button class="theater-close-btn" id="close-drawer-btn">✕ CLOSE</button>
+          <button class="theater-close-btn" id="close-drawer-btn" style="font-size:1rem; cursor:pointer;">✕ CLOSE</button>
         </div>
 
-        <div class="drawer-media-hero">
-          <img src="${proj.thumbnail}" alt="${proj.title}" style="width:100%; border-radius:10px; margin-bottom:2rem; box-shadow:0 20px 50px rgba(0,0,0,0.8);">
+        <!-- Embedded Video Player -->
+        <div style="position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:10px; overflow:hidden; margin-bottom:3rem; border:1px solid var(--color-border); box-shadow:0 25px 60px rgba(0,0,0,0.8);">
+          <video controls playsinline style="width:100%; height:100%; object-fit:contain;" poster="${proj.thumbnail}">
+            <source src="${proj.videoRef}" type="video/mp4">
+            Your browser does not support video playback.
+          </video>
         </div>
 
         <div class="drawer-text-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:3rem; margin-bottom:3rem;">
@@ -432,16 +627,17 @@ class AxeFilmsApp {
 
   closeProjectDrawer() {
     if (this.projectDrawerModal) {
+      const video = this.projectDrawerModal.querySelector('video');
+      if (video) video.pause();
       this.projectDrawerModal.classList.remove('active');
       document.body.style.overflow = '';
       if (window.soundEngine) window.soundEngine.playShutter();
     }
   }
 
-  // F. INTERACTIVE LENS APERTURE SIMULATOR
+  // K. INTERACTIVE LENS APERTURE SIMULATOR
   setupApertureSimulator() {
     if (!this.fstopSlider) return;
-
     const fstopValues = [1.4, 2.0, 2.8, 4.0, 5.6, 8.0, 11.0, 16.0, 22.0];
     const irisBladeCenter = document.querySelector('.iris-blade-center');
 
@@ -453,13 +649,11 @@ class AxeFilmsApp {
         this.fstopReadout.innerHTML = `<span>f/${fstop.toFixed(1)}</span><span>${fstop <= 2.8 ? 'SHALLOW DEPTH OF FIELD' : fstop >= 11 ? 'DEEP EXPANDED FOCUS' : 'BALANCED CINEMA'}</span>`;
       }
 
-      // Update 2D SVG / CSS iris
       if (irisBladeCenter) {
         const scale = 1.3 - (idx / fstopValues.length) * 0.85;
         irisBladeCenter.style.transform = `scale(${scale})`;
       }
 
-      // Update 3D Three.js Iris Blades
       if (window.axeThree) {
         window.axeThree.setApertureFStop(fstop);
       }
@@ -470,49 +664,7 @@ class AxeFilmsApp {
     });
   }
 
-  // G. THEATER SHOWREEL MODAL
-  setupTheaterModal() {
-    const playBtns = document.querySelectorAll('.hero-play-reel-btn, .open-showreel-action');
-    const closeBtn = document.getElementById('theater-close-btn');
-
-    playBtns.forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (this.theaterModal) {
-          this.theaterModal.classList.add('active');
-          document.body.style.overflow = 'hidden';
-          if (window.soundEngine) window.soundEngine.playWhoosh();
-          
-          const video = this.theaterModal.querySelector('video');
-          if (video) {
-            video.currentTime = 0;
-            video.play().catch(() => {});
-          }
-        }
-      });
-    });
-
-    const closeModal = () => {
-      if (this.theaterModal) {
-        this.theaterModal.classList.remove('active');
-        document.body.style.overflow = '';
-        const video = this.theaterModal.querySelector('video');
-        if (video) video.pause();
-        if (window.soundEngine) window.soundEngine.playShutter();
-      }
-    };
-
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeModal();
-        this.closeProjectDrawer();
-      }
-    });
-  }
-
-  // H. SOUND TOGGLE BUTTON
+  // L. SOUND TOGGLE BUTTON
   setupSoundToggle() {
     if (!this.soundToggleBtn) return;
 
@@ -533,7 +685,7 @@ class AxeFilmsApp {
     });
   }
 
-  // I. COMMISSION BOOKING FORM
+  // M. COMMISSION BOOKING FORM
   setupCommissionForm() {
     const scopePills = document.querySelectorAll('.scope-pill');
     scopePills.forEach((pill) => {
@@ -568,7 +720,7 @@ class AxeFilmsApp {
     }
   }
 
-  // J. HEADER SCROLL STATE
+  // N. HEADER SCROLL STATE
   setupHeaderScroll() {
     const header = document.querySelector('.site-header');
     window.addEventListener('scroll', () => {
@@ -580,13 +732,12 @@ class AxeFilmsApp {
     }, { passive: true });
   }
 
-  // K. LIVE STUDIO CLOCK (LAHORE / MULTAN TIME)
+  // O. LIVE PKT STUDIO CLOCK
   startLiveStudioClock() {
     const clockEl = document.getElementById('live-studio-time');
     if (!clockEl) return;
 
     const updateClock = () => {
-      // Pakistan Standard Time is UTC+5
       const now = new Date();
       const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
       const pktTime = new Date(utc + (3600000 * 5));
@@ -603,7 +754,6 @@ class AxeFilmsApp {
   }
 }
 
-// Instantiate on DOMContentLoaded
 window.addEventListener('DOMContentLoaded', () => {
   window.axeApp = new AxeFilmsApp();
 });

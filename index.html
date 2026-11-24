@@ -26,6 +26,9 @@
 
   <!-- Three.js (r128) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
 </head>
 <body>
 
@@ -33,7 +36,7 @@
   <div class="film-grain" aria-hidden="true"></div>
   <div class="ambient-glow" aria-hidden="true"></div>
 
-  <!-- Custom Magnetic Cursor -->
+  <!-- Custom Inertial Magnetic Cursor -->
   <div class="cursor-dot" aria-hidden="true"></div>
   <div class="cursor-follower" aria-hidden="true"></div>
 
@@ -78,7 +81,6 @@
   <header class="site-header">
     <a href="#" class="brand-container" aria-label="Axe Films Home">
       <div class="brand-logo-mark">
-        <!-- Stylized "X" Aperture Emblem -->
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
           <path d="M22 15 L45 50 L22 85 L38 85 L54 58 L70 85 L86 85 L63 50 L86 15 L70 15 L54 42 L38 15 Z" />
           <polygon points="54,42 78,50 54,58" opacity="0.9" />
@@ -115,9 +117,16 @@
   </header>
 
   <!-- ==========================================================================
-       HERO SECTION & 3D WEBGL APERTURE MOTIF
+       HERO SECTION — ATMOSPHERIC VIDEO LOOP + 3D WEBGL APERTURE
        ========================================================================== -->
   <section class="hero-section" id="hero">
+    <!-- Ambient Silent Cinematic Video Background -->
+    <div class="hero-bg-video-wrap" aria-hidden="true">
+      <video class="hero-bg-video" autoplay loop muted playsinline preload="auto" poster="Axefilms SMP 1-4-01.JPEG">
+        <source src="AURA x Groom.mp4" type="video/mp4">
+      </video>
+    </div>
+
     <!-- WebGL Canvas for 3D Camera Aperture & Floating Prisms -->
     <div id="hero-webgl-canvas" aria-hidden="true"></div>
     <div class="hero-vignette" aria-hidden="true"></div>
@@ -140,7 +149,7 @@
         </p>
 
         <div class="hero-actions">
-          <button class="hero-play-reel-btn open-showreel-action" aria-label="Play Studio Showreel">
+          <button class="hero-play-reel-btn open-showreel-action" data-film="fun-forest" aria-label="Play Studio Showreel">
             <div class="play-disc-outer">
               <div class="play-disc-inner">
                 <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
@@ -170,7 +179,7 @@
       <span class="ticker-item">FUN FOREST MULTAN <span class="dot"></span></span>
       <span class="ticker-item">AURA GROOMING <span class="dot"></span></span>
       <span class="ticker-item">AUOR SUPERMARKET <span class="dot"></span></span>
-      <!-- Duplicate for infinite seamless loop -->
+      <!-- Duplicate for seamless infinite loop -->
       <span class="ticker-item">AXE FILMS <span class="dot"></span></span>
       <span class="ticker-item">COMMERCIALS & BRAND FILMS <span class="dot"></span></span>
       <span class="ticker-item">PRESTIGE COUTURE <span class="dot"></span></span>
@@ -256,18 +265,26 @@
   </section>
 
   <!-- ==========================================================================
-       CASE STUDY SPOTLIGHTS ("THE AXE SHOTS")
+       CASE STUDY SPOTLIGHTS — WITH ACCURATE INLINE VIDEO PLAYERS
        ========================================================================== -->
   <section class="case-studies-section" id="case-studies">
     <div class="section-grid">
       <span class="section-label">03 / REAL TRANSFORMATION</span>
 
-      <!-- Case 01: Fun Forest -->
+      <!-- Case 01: Fun Forest (Accurate Fun Forest.mp4 Player) -->
       <article class="case-card-featured">
-        <div class="case-media-wrap">
-          <span class="case-badge-pill">CASE 01 · ENTERTAINMENT</span>
-          <img src="Axefilms SMP 1-4-03.JPEG" alt="Fun Forest Go-Karting Commercial Case Study" loading="lazy">
+        <div class="case-video-box" id="case-box-fun-forest">
+          <span class="case-badge-pill">CASE 01 · DIEGETIC SOUND</span>
+          <video class="case-video-player" playsinline preload="metadata" poster="Axefilms SMP 1-4-03.JPEG">
+            <source src="Fun Forest.mp4" type="video/mp4">
+          </video>
+          <div class="case-video-overlay-trigger" aria-label="Play Fun Forest Commercial">
+            <div class="case-play-btn">
+              <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
+            </div>
+          </div>
         </div>
+
         <div class="case-content-wrap">
           <span class="case-subtitle">FUN FOREST MULTAN · COMMERCIAL</span>
           <h3 class="case-headline">“THE KARTING WAS <span class="quote">NOT SELLING</span>”</h3>
@@ -287,7 +304,7 @@
         </div>
       </article>
 
-      <!-- Case 02: El Classico -->
+      <!-- Case 02: El Classico (Accurate Elclassico/elclassico.mp4 Player) -->
       <article class="case-card-featured reversed">
         <div class="case-content-wrap">
           <span class="case-subtitle">EL CLASSICO · BRAND FILM</span>
@@ -306,29 +323,97 @@
             </div>
           </div>
         </div>
-        <div class="case-media-wrap">
+
+        <div class="case-video-box" id="case-box-elclassico">
           <span class="case-badge-pill">CASE 02 · HOSPITALITY</span>
-          <img src="Axefilms SMP 1-4-06.jpeg" alt="El Classico Brand Film Case Study" loading="lazy">
+          <video class="case-video-player" playsinline preload="metadata" poster="Axefilms SMP 1-4-06.jpeg">
+            <source src="Elclassico/elclassico.mp4" type="video/mp4">
+          </video>
+          <div class="case-video-overlay-trigger" aria-label="Play El Classico Film">
+            <div class="case-play-btn">
+              <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
+            </div>
+          </div>
         </div>
       </article>
     </div>
   </section>
 
   <!-- ==========================================================================
-       PRESTIGE COUTURE LOOKBOOK STRIP
+       PRESTIGE COUTURE: VERTICAL REELS + EDITORIAL STILLS
        ========================================================================== -->
   <section class="lookbook-section" id="couture">
     <div class="lookbook-header">
       <div>
-        <span class="section-label">04 / EDITORIAL STILLS</span>
+        <span class="section-label">04 / EDITORIAL STILLS & REELS</span>
         <h2 class="works-title">Prestige Couture</h2>
       </div>
-      <p style="color:var(--color-muted); max-width:380px; font-size:0.95rem;">
-        Authentic production stills from the 20-piece luxury groom collection. Caravaggio lighting and obsidian shadows.
+      <p style="color:var(--color-muted); max-width:440px; font-size:0.95rem;">
+        Authentic vertical 9:16 reels and 20-piece editorial lookbook. Caravaggio chiaroscuro lighting and obsidian black embroidery.
       </p>
     </div>
 
-    <div class="lookbook-strip-container">
+    <!-- Vertical 9:16 Video Reels Grid -->
+    <div class="reels-grid">
+      <!-- Reel 01 -->
+      <div class="reel-card" data-video="Prestige/Reels/Reel 01. Manan Black.mp4">
+        <video class="reel-video" muted loop playsinline preload="none" poster="Prestige/Images/IMG_2912.JPG">
+          <source src="Prestige/Reels/Reel 01. Manan Black.mp4" type="video/mp4">
+        </video>
+        <div class="reel-overlay">
+          <span class="reel-badge">REEL 01 · 9:16</span>
+          <div>
+            <h4 class="reel-title">MANAN OBSIDIAN</h4>
+            <p class="reel-meta">85MM · F/1.4 · 4K</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reel 02 -->
+      <div class="reel-card" data-video="Prestige/Reels/Reel 02. Manan beige.mp4">
+        <video class="reel-video" muted loop playsinline preload="none" poster="Prestige/Images/IMG_2915.JPG">
+          <source src="Prestige/Reels/Reel 02. Manan beige.mp4" type="video/mp4">
+        </video>
+        <div class="reel-overlay">
+          <span class="reel-badge">REEL 02 · 9:16</span>
+          <div>
+            <h4 class="reel-title">MANAN BEIGE</h4>
+            <p class="reel-meta">50MM · T1.5 · TUNGSTEN</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reel 03 -->
+      <div class="reel-card" data-video="Prestige/Reels/Reel 03. Qaim beige.mp4">
+        <video class="reel-video" muted loop playsinline preload="none" poster="Prestige/Images/IMG_2920.JPG">
+          <source src="Prestige/Reels/Reel 03. Qaim beige.mp4" type="video/mp4">
+        </video>
+        <div class="reel-overlay">
+          <span class="reel-badge">REEL 03 · 9:16</span>
+          <div>
+            <h4 class="reel-title">QAIM BEIGE</h4>
+            <p class="reel-meta">100MM · F/2.8 · MACRO</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reel 05 -->
+      <div class="reel-card" data-video="Prestige/Reels/Reel 05. Qaim Black.mp4">
+        <video class="reel-video" muted loop playsinline preload="none" poster="Prestige/Images/IMG_2928.JPG">
+          <source src="Prestige/Reels/Reel 05. Qaim Black.mp4" type="video/mp4">
+        </video>
+        <div class="reel-overlay">
+          <span class="reel-badge">REEL 05 · 9:16</span>
+          <div>
+            <h4 class="reel-title">QAIM BLACK</h4>
+            <p class="reel-meta">35MM · F/1.8 · AMBIENT</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drag-to-Scroll Lookbook Horizontal Strip -->
+    <div class="lookbook-strip-container" id="lookbook-strip-container">
       <div class="lookbook-strip">
         <div class="lookbook-photo-card">
           <img src="Prestige/Images/IMG_2912.JPG" alt="Manan Obsidian Sherwani Stance" loading="lazy">
@@ -514,19 +599,42 @@
   </footer>
 
   <!-- ==========================================================================
-       THEATER SHOWREEL MODAL
+       THEATER SHOWREEL MODAL (WITH ACCURATE MULTI-FILM SWITCHER)
        ========================================================================== -->
   <div class="theater-modal" id="theater-modal" role="dialog" aria-modal="true" aria-label="Studio Showreel Player">
     <div class="theater-container">
       <div class="theater-header">
-        <span class="theater-title">AXE FILMS · 4K DIRECTORS SHOWREEL</span>
+        <span class="theater-title" id="theater-title-text">AXE FILMS · 4K DIRECTORS SHOWREEL</span>
         <button class="theater-close-btn" id="theater-close-btn">✕ CLOSE ESC</button>
       </div>
+
       <div class="theater-video-wrap">
-        <video controls playsinline poster="Axefilms SMP 1-4-01.JPEG">
-          <source src="Fun Forest.mp4" type="video/mp4">
+        <video id="theater-video-element" controls playsinline poster="Axefilms SMP 1-4-01.JPEG">
+          <source id="theater-video-source" src="Fun Forest.mp4" type="video/mp4">
           Your browser does not support video playback.
         </video>
+      </div>
+
+      <!-- Multi-Film Switcher Channel Bar -->
+      <div class="theater-playlist-bar">
+        <button class="playlist-channel-btn active" data-src="Fun Forest.mp4" data-title="FUN FOREST MULTAN · COMMERCIAL SOUND DESIGN">
+          01. FUN FOREST (COMMERCIAL)
+        </button>
+        <button class="playlist-channel-btn" data-src="Elclassico/elclassico.mp4" data-title="EL CLASSICO · NARRATIVE SCENE BRAND FILM">
+          02. EL CLASSICO (BRAND FILM)
+        </button>
+        <button class="playlist-channel-btn" data-src="Prestige/Reels/Reel 01. Manan Black.mp4" data-title="PRESTIGE MENSWEAR · HIGH COUTURE REEL">
+          03. PRESTIGE (COUTURE REEL)
+        </button>
+        <button class="playlist-channel-btn" data-src="AURA x Groom.mp4" data-title="AURA GROOMING · LIFESTYLE & STUDIO CAMPAIGN">
+          04. AURA (GROOMING FILM)
+        </button>
+        <button class="playlist-channel-btn" data-src="AUOR Supermarket/Date Night With AUOR 1.mp4" data-title="AUOR SUPERMARKET · DATE NIGHT LAUNCH">
+          05. AUOR (DATE NIGHT LAUNCH)
+        </button>
+        <button class="playlist-channel-btn" data-src="Hashmi Eye Centre.mp4" data-title="HASHMI EYE CENTRE · OPHTHALMOLOGY STORY">
+          06. HASHMI EYE CENTRE (HEALTHCARE)
+        </button>
       </div>
     </div>
   </div>
