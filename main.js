@@ -13,13 +13,15 @@ const AXE_PROJECTS = [
     category: 'couture',
     categoryLabel: 'Fashion & Couture Campaign',
     year: '2025',
-    thumbnail: 'Prestige/Images/IMG_2912.JPG',
-    previewTag: '20 Editorial Stills · 11 Video Reels',
+    thumbnail: 'preview_prestige.jpg',
+    orientation: 'vertical',
+    previewTag: '9:16 HIGH COUTURE REEL',
     headline: 'Redefining Eastern Bridal Couture with Obsidian & Gold Cinema',
     challenge: 'Prestige required a high-fashion, mood-drenched campaign for their hand-embroidered sherwani collection that elevated the brand from local retail to international editorial stature.',
     pivot: 'Rather than standard flat catalog photography, we built a dramatic Caravaggio-inspired lighting rig with deep obsidian shadows and warm tungsten rim highlights. Every frame was crafted like a high-end period film still.',
     result: '11 viral reels across Instagram, full editorial lookbook utilized for flagship campaign launch.',
     stills: [
+      'preview_prestige.jpg',
       'Prestige/Images/IMG_2912.JPG',
       'Prestige/Images/IMG_2915.JPG',
       'Prestige/Images/IMG_2920.JPG',
@@ -34,14 +36,15 @@ const AXE_PROJECTS = [
     category: 'brand',
     categoryLabel: 'Cinematic Brand Film',
     year: '2024',
-    thumbnail: 'Axefilms SMP 1-4-06.jpeg',
-    previewTag: 'Narrative Film · 4K Cinema',
+    thumbnail: 'preview_elclassico.jpg',
+    orientation: 'horizontal',
+    previewTag: '4K CINEMATIC BRAND SCENE',
     headline: 'We Turned Down the Brief: Shot a Scene Instead',
     challenge: 'El Classico asked for a standard interior walkthrough of their flagship restaurant and coffee branch to showcase seating and lighting.',
     pivot: 'We refused the walkthrough. Walkthroughs are forgotten in 2 seconds. Instead, we wrote and filmed a moody, atmospheric cinematic scene capturing an authentic evening encounter inside the space. The space became the living backdrop.',
     result: 'Became the most shared hospitality video in the region; transformed the branch into a cultural evening destination.',
     stills: [
-      'Axefilms SMP 1-4-06.jpeg'
+      'preview_elclassico.jpg'
     ],
     videoRef: 'Elclassico/elclassico.mp4'
   },
@@ -52,14 +55,15 @@ const AXE_PROJECTS = [
     category: 'commercials',
     categoryLabel: 'Commercial & Sound Design',
     year: '2024',
-    thumbnail: 'Axefilms SMP 1-4-03.JPEG',
-    previewTag: 'POV Action · Diegetic Sound',
+    thumbnail: 'preview_funforest.jpg',
+    orientation: 'horizontal',
+    previewTag: 'POV ACTION · DIEGETIC SOUND',
     headline: 'The Karting Was Not Selling — Sound Over Music',
     challenge: 'Their previous karting promo had no energy, and footfall at the track was declining. The brief asked for another montage over generic upbeat music.',
     pivot: 'We banned the music track completely. We mounted cameras directly onto the go-kart chassis and drove them at race speeds ourselves. The entire film was cut to raw diegetic sound design: tire screech, engine revs, and helmet breathing.',
     result: 'Kart ticket sales spiked within 72 hours; customers walked in explicitly quoting the reel at the ticket counter.',
     stills: [
-      'Axefilms SMP 1-4-03.JPEG'
+      'preview_funforest.jpg'
     ],
     videoRef: 'Fun Forest.mp4'
   },
@@ -70,14 +74,15 @@ const AXE_PROJECTS = [
     category: 'brand',
     categoryLabel: 'Lifestyle & Social Movement',
     year: '2025',
-    thumbnail: 'AURA_preview.jpg',
-    previewTag: '17 Digital Reels · Luxury Grooming',
+    thumbnail: 'preview_aura.jpg',
+    orientation: 'vertical',
+    previewTag: '17 DIGITAL REELS · LUXURY GROOMING',
     headline: 'Visual Identity in Motion for Modern Male Grooming',
     challenge: 'Establishing AURA as Pakistan\'s premier luxury grooming lounge with high-profile celebrity and influencer clientele.',
     pivot: 'A 17-part short-form cinematic series emphasizing tactile craftsmanship: razor glides, steam, precision scissor cuts, and candid character vignettes inside the studio.',
     result: 'Massive organic engagement, driving fully booked VIP chair appointments across Multan and Islamabad.',
     stills: [
-      'AURA_preview.jpg',
+      'preview_aura.jpg',
       'AURA_still_2.jpg',
       'AURA_still_3.jpg'
     ],
@@ -90,14 +95,15 @@ const AXE_PROJECTS = [
     category: 'commercials',
     categoryLabel: 'Commercial Launch Campaign',
     year: '2024',
-    thumbnail: 'AUOR_preview.jpg',
-    previewTag: 'Grand Opening & Date Night Series',
+    thumbnail: 'preview_auor.jpg',
+    orientation: 'vertical',
+    previewTag: 'GRAND OPENING · DATE NIGHT SERIES',
     headline: 'From Grocery Run to "Date Night with AUOR"',
     challenge: 'Breaking through the noise of discount supermarket advertising with a fresh emotional angle.',
     pivot: 'Conceived the "Date Night with AUOR" narrative series, highlighting late-night culinary adventures, premium gourmet aisles, and human intimacy.',
     result: 'Packed grand opening launch weekend and record brand recall.',
     stills: [
-      'AUOR_preview.jpg',
+      'preview_auor.jpg',
       'AUOR_still_2.jpg',
       'AUOR_still_3.jpg'
     ],
@@ -110,14 +116,15 @@ const AXE_PROJECTS = [
     category: 'case',
     categoryLabel: 'Healthcare & Precision Film',
     year: '2024',
-    thumbnail: 'Hashmi_preview.jpg',
-    previewTag: 'Ophthalmic Microsurgery · Human Story',
+    thumbnail: 'preview_hashmi.jpg',
+    orientation: 'vertical',
+    previewTag: 'OPHTHALMIC MICROSURGERY · HUMAN STORY',
     headline: 'The Science of Vision: Precision Meets Human Vulnerability',
     challenge: 'Medical videos are often clinical, sterile, and intimidating for prospective patients.',
     pivot: 'Framed ophthalmic microsurgery as an art form: ultra-macro optics, warm natural lighting, and Dr. Safdar Hashmi\'s emotional patient journeys before and after sight restoration.',
     result: 'Overwhelming patient trust and widespread institutional recognition.',
     stills: [
-      'Hashmi_preview.jpg',
+      'preview_hashmi.jpg',
       'Hashmi_still_2.jpg',
       'Hashmi_still_3.jpg'
     ],
@@ -210,12 +217,12 @@ class AxeFilmsApp {
   // B. ASSET LOADING SEQUENCE & 3D APERTURE REVEAL
   startAssetLoadingSequence() {
     const criticalAssets = [
-      'AURA_preview.jpg',
-      'AUOR_preview.jpg',
-      'Hashmi_preview.jpg',
-      'Axefilms SMP 1-4-03.JPEG',
-      'Axefilms SMP 1-4-06.jpeg',
-      'Prestige/Images/IMG_2912.JPG'
+      'preview_aura.jpg',
+      'preview_auor.jpg',
+      'preview_hashmi.jpg',
+      'preview_funforest.jpg',
+      'preview_elclassico.jpg',
+      'preview_prestige.jpg'
     ];
 
     let loadedCount = 0;
@@ -358,6 +365,7 @@ class AxeFilmsApp {
       row.dataset.category = proj.category;
       row.dataset.thumbnail = proj.thumbnail;
       row.dataset.video = proj.videoRef;
+      row.dataset.orientation = proj.orientation || 'horizontal';
       row.dataset.tag = proj.previewTag;
 
       row.innerHTML = `
@@ -401,13 +409,15 @@ class AxeFilmsApp {
     });
   }
 
-  // E. MELON.STUDIO SIGNATURE FLOATING HOVER PREVIEW
+  // E. MELON.STUDIO SIGNATURE FLOATING HOVER PREVIEW (VIDEO + KEYFRAME REVEAL)
   setupInteractiveHoverPreview() {
     if (!this.hoverPreview) return;
     const previewImg = this.hoverPreview.querySelector('img');
+    const previewVideo = this.hoverPreview.querySelector('video');
     const previewTag = this.hoverPreview.querySelector('.preview-tag');
 
     let previewPos = { x: 0, y: 0 };
+    let currentVideoSrc = '';
 
     document.addEventListener('mousemove', (e) => {
       previewPos.x += (e.clientX + 30 - previewPos.x) * 0.25;
@@ -418,19 +428,64 @@ class AxeFilmsApp {
 
     document.addEventListener('mouseover', (e) => {
       const row = e.target.closest('.work-row');
-      if (row) {
-        if (previewImg) previewImg.src = row.dataset.thumbnail;
-        if (previewTag) previewTag.textContent = row.dataset.tag;
+      if (row && this.hoverPreview) {
+        const thumb = row.dataset.thumbnail;
+        const video = row.dataset.video;
+        const tag = row.dataset.tag;
+        const orientation = row.dataset.orientation;
+
+        // Adaptive Aspect Ratio: 9:16 vertical reel vs 16:9 cinema
+        if (orientation === 'vertical') {
+          this.hoverPreview.classList.add('format-vertical');
+        } else {
+          this.hoverPreview.classList.remove('format-vertical');
+        }
+
+        if (previewImg && thumb) {
+          previewImg.src = thumb;
+        }
+        if (previewTag && tag) {
+          previewTag.textContent = tag;
+        }
+
+        if (previewVideo && video) {
+          if (currentVideoSrc !== video) {
+            currentVideoSrc = video;
+            previewVideo.src = video;
+          }
+          previewVideo.currentTime = 0;
+          previewVideo.play()
+            .then(() => {
+              previewVideo.classList.add('is-playing');
+            })
+            .catch(() => {});
+        }
+
         this.hoverPreview.classList.add('visible');
       }
     });
 
     document.addEventListener('mouseout', (e) => {
       const row = e.target.closest('.work-row');
-      if (row) {
+      if (row && this.hoverPreview) {
+        if (previewVideo) {
+          previewVideo.pause();
+          previewVideo.classList.remove('is-playing');
+        }
         this.hoverPreview.classList.remove('visible');
       }
     });
+
+    const worksSec = document.querySelector('.works-section');
+    if (worksSec) {
+      worksSec.addEventListener('mouseleave', () => {
+        if (previewVideo) {
+          previewVideo.pause();
+          previewVideo.classList.remove('is-playing');
+        }
+        this.hoverPreview.classList.remove('visible');
+      });
+    }
   }
 
   // F. ACCURATE INLINE VIDEO PLAYERS FOR CASE STUDIES

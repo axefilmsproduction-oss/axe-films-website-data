@@ -13,7 +13,7 @@
   <!-- Open Graph -->
   <meta property="og:title" content="AXE FILMS — Stories That Move People">
   <meta property="og:description" content="Built in Multan, aimed at anywhere. Commercials, brand films, and couture campaigns crafted beyond the frame.">
-  <meta property="og:image" content="./Axefilms SMP 1-4-01.JPEG">
+  <meta property="og:image" content="./preview_elclassico.jpg">
   <meta property="og:type" content="website">
 
   <!-- Premium Web Typography -->
@@ -21,8 +21,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="styles.css">
+  <!-- Stylesheet (Cache Busting v3.0.0) -->
+  <link rel="stylesheet" href="styles.css?v=3.0.0">
 
   <!-- Three.js (r128) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -122,7 +122,7 @@
   <section class="hero-section" id="hero">
     <!-- Ambient Silent Cinematic Video Background -->
     <div class="hero-bg-video-wrap" aria-hidden="true">
-      <video class="hero-bg-video" autoplay loop muted playsinline preload="auto" poster="AURA_preview.jpg">
+      <video class="hero-bg-video" autoplay loop muted playsinline preload="auto" poster="preview_aura.jpg">
         <source src="AURA x Groom.mp4" type="video/mp4">
       </video>
     </div>
@@ -255,11 +255,12 @@
       <!-- Populated dynamically via main.js with authentic projects -->
     </div>
 
-    <!-- Floating Hover Preview Card -->
+    <!-- Floating Hover Preview Card (Melon.studio Signature Dynamic Video & Still) -->
     <div class="hover-preview-card" aria-hidden="true">
-      <img src="Prestige/Images/IMG_2912.JPG" alt="Work Preview">
+      <img src="preview_aura.jpg" alt="Work Preview" class="preview-img">
+      <video class="preview-video" muted loop playsinline preload="none"></video>
       <div class="preview-overlay">
-        <span class="preview-tag">EDITORIAL LOOKBOOK</span>
+        <span class="preview-tag">17 DIGITAL REELS · LUXURY GROOMING</span>
       </div>
     </div>
   </section>
@@ -275,7 +276,7 @@
       <article class="case-card-featured">
         <div class="case-video-box" id="case-box-fun-forest">
           <span class="case-badge-pill">CASE 01 · DIEGETIC SOUND</span>
-          <video class="case-video-player" playsinline preload="metadata" poster="Axefilms SMP 1-4-03.JPEG">
+          <video class="case-video-player" playsinline preload="metadata" poster="preview_funforest.jpg">
             <source src="Fun Forest.mp4" type="video/mp4">
           </video>
           <div class="case-video-overlay-trigger" aria-label="Play Fun Forest Commercial">
@@ -326,7 +327,7 @@
 
         <div class="case-video-box" id="case-box-elclassico">
           <span class="case-badge-pill">CASE 02 · HOSPITALITY</span>
-          <video class="case-video-player" playsinline preload="metadata" poster="Axefilms SMP 1-4-06.jpeg">
+          <video class="case-video-player" playsinline preload="metadata" poster="preview_elclassico.jpg">
             <source src="Elclassico/elclassico.mp4" type="video/mp4">
           </video>
           <div class="case-video-overlay-trigger" aria-label="Play El Classico Film">
@@ -609,7 +610,7 @@
       </div>
 
       <div class="theater-video-wrap">
-        <video id="theater-video-element" controls playsinline poster="AURA_preview.jpg">
+        <video id="theater-video-element" controls playsinline poster="preview_funforest.jpg">
           <source id="theater-video-source" src="Fun Forest.mp4" type="video/mp4">
           Your browser does not support video playback.
         </video>
@@ -650,9 +651,9 @@
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="sound-fx.js"></script>
-  <script src="three-scene.js"></script>
-  <script src="main.js"></script>
+  <!-- Scripts (Cache Busting v3.0.0) -->
+  <script src="sound-fx.js?v=3.0.0"></script>
+  <script src="three-scene.js?v=3.0.0"></script>
+  <script src="main.js?v=3.0.0"></script>
 </body>
 </html>
