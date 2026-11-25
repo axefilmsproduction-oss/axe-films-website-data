@@ -1,10 +1,8 @@
 /**
  * AXE FILMS — BESPOKE 3D THREE.JS APERTURE & FRAME ENGINE
- * Concept: "From Frame to Film"
- * 
- * Frame-rate independent, silky-smooth WebGL animation.
- * Features 8 architectural iris blades, intersecting 'X' cinema frame beams,
- * and cinematic projector dust volume.
+ * Optimized for 60-120fps stutter-free performance.
+ * Features viewport visibility check (pauses offscreen rendering)
+ * and frame-rate independent exponential lerp.
  */
 
 class AxeThreeScene {
@@ -25,12 +23,12 @@ class AxeThreeScene {
     this.particles = null;
     this.pointLight = null;
     
-    // Smooth mouse coordinates with inertia
     this.mouse = { x: 0, y: 0 };
     this.targetMouse = { x: 0, y: 0 };
     this.scrollProgress = 0;
     this.targetScroll = 0;
     this.isLoaded = false;
+    this.isInViewport = true;
     this.clock = new THREE.Clock();
     this.animationFrameId = null;
 
@@ -51,22 +49,20 @@ class AxeThreeScene {
     const width = window.innerWidth;
     const height = window.innerHeight;
 
-    // 1. Scene setup
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0x0c090a, 0.045);
 
-    // 2. Camera setup
     this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     this.camera.position.set(0, 0, 14);
 
-    // 3. Renderer setup
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
-      powerPreference: "high-performance"
+      powerPreference: "high-performance",
+      precision: "mediump" // Optimal mobile & desktop balance
     });
     this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.25;
 
@@ -74,35 +70,25 @@ class AxeThreeScene {
       this.container.appendChild(this.renderer.domElement);
     }
 
-    // 4. Lighting Rig
+    // Lighting Rig
     const ambientLight = new THREE.AmbientLight(0x1f0c0e, 1.6);
     this.scene.add(ambientLight);
 
-    // Dynamic Crimson Key Light
-    this.pointLight = new THREE.PointLight(0xe62323, 4.8, 28);
+    this.pointLight = new THREE.PointLight(0xe62323, 4.5, 26);
     this.pointLight.position.set(2, 3, 5);
     this.scene.add(this.pointLight);
 
-    // Cold Rim Light for specular edges
-    const rimLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.1);
     rimLight.position.set(-6, 8, -4);
     this.scene.add(rimLight);
 
-    // Deep Burgundy Fill
-    const backLight = new THREE.PointLight(0x821412, 3.2, 20);
+    const backLight = new THREE.PointLight(0x821412, 3.0, 18);
     backLight.position.set(0, -4, -2);
     this.scene.add(backLight);
 
-    // 5. Build Architectural Aperture & "X" Motif
     this.buildApertureAndXMotif();
-
-    // 6. Build Cinematic Dust / Projector Volume
     this.buildCinematicParticles();
-
-    // 7. Event listeners
     this.bindEvents();
-
-    // 8. Start Loop
     this.animate();
   }
 
@@ -110,12 +96,10 @@ class AxeThreeScene {
     this.apertureGroup = new THREE.Group();
     this.scene.add(this.apertureGroup);
 
-    // Luxury metallic materials
     const obsidianMetalMat = new THREE.MeshStandardMaterial({
       color: 0x181214,
       metalness: 0.94,
-      roughness: 0.2,
-      envMapIntensity: 1.6
+      roughness: 0.2
     });
 
     const crimsonEdgeMat = new THREE.MeshStandardMaterial({
@@ -133,7 +117,6 @@ class AxeThreeScene {
       opacity: 0.4
     });
 
-    // A. 8-Blade Radial Camera Iris
     const bladeCount = 8;
     const irisRadius = 3.6;
 
@@ -150,10 +133,10 @@ class AxeThreeScene {
       const extrudeSettings = {
         depth: 0.12,
         bevelEnabled: true,
-        bevelSegments: 3,
+        bevelSegments: 2,
         steps: 1,
-        bevelSize: 0.04,
-        bevelThickness: 0.04
+        bevelSize: 0.03,
+        bevelThickness: 0.03
       };
 
       const bladeGeo = new THREE.ExtrudeGeometry(bladeShape, extrudeSettings);
@@ -173,7 +156,6 @@ class AxeThreeScene {
       });
     }
 
-    // B. Intersecting 'X' Cinema Beams (Axe Films signature)
     const beamGeo = new THREE.BoxGeometry(0.7, 5.6, 0.25);
 
     const beam1 = new THREE.Mesh(beamGeo, obsidianMetalMat);
@@ -188,16 +170,14 @@ class AxeThreeScene {
     this.apertureGroup.add(beam2);
     this.xBeams.push(beam2);
 
-    // C. Optical Shutter Wireframe Rings
-    const ringGeo = new THREE.TorusGeometry(4.2, 0.03, 16, 64);
+    const ringGeo = new THREE.TorusGeometry(4.2, 0.03, 12, 48);
     const ring = new THREE.Mesh(ringGeo, luminousCoreMat);
     this.apertureGroup.add(ring);
 
-    const innerRingGeo = new THREE.TorusGeometry(1.8, 0.02, 16, 48);
+    const innerRingGeo = new THREE.TorusGeometry(1.8, 0.02, 12, 36);
     const innerRing = new THREE.Mesh(innerRingGeo, luminousCoreMat);
     this.apertureGroup.add(innerRing);
 
-    // Position in hero composition
     this.setResponsivePosition();
   }
 
@@ -216,7 +196,7 @@ class AxeThreeScene {
   }
 
   buildCinematicParticles() {
-    const particleCount = 500;
+    const particleCount = 350; // Optimized count for 120fps headroom
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
@@ -256,12 +236,18 @@ class AxeThreeScene {
     window.addEventListener('mousemove', (e) => {
       this.targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       this.targetMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    });
-
-    window.addEventListener('scroll', () => {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      this.targetScroll = maxScroll > 0 ? window.scrollY / maxScroll : 0;
     }, { passive: true });
+
+    // Track hero visibility to pause offscreen rendering
+    const heroEl = document.getElementById('hero');
+    if (heroEl && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          this.isInViewport = entry.isIntersecting;
+        });
+      }, { rootMargin: '100px' });
+      observer.observe(heroEl);
+    }
 
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
@@ -271,6 +257,10 @@ class AxeThreeScene {
         this.animate();
       }
     });
+  }
+
+  setScrollProgress(progress) {
+    this.targetScroll = progress;
   }
 
   onWindowResize() {
@@ -289,12 +279,11 @@ class AxeThreeScene {
     if (!this.apertureGroup) return;
 
     const startTime = performance.now();
-    const duration = 1400;
+    const duration = 1200;
 
     const expandIris = (time) => {
       const elapsed = time - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // Smooth cubic-bezier ease out
       const ease = 1 - Math.pow(1 - progress, 3);
 
       this.blades.forEach((b) => {
@@ -322,29 +311,30 @@ class AxeThreeScene {
     });
 
     if (this.pointLight) {
-      this.pointLight.intensity = 5.5 - (normalized * 3.5);
+      this.pointLight.intensity = 5.0 - (normalized * 3.2);
     }
   }
 
   animate() {
     this.animationFrameId = requestAnimationFrame(() => this.animate());
 
-    const delta = this.clock.getDelta();
+    // Skip rendering when user has scrolled past the hero section (massive FPS boost)
+    if (!this.isInViewport && this.isLoaded) return;
+
+    const delta = Math.min(this.clock.getDelta(), 0.1);
     const elapsedTime = this.clock.getElapsedTime();
 
-    // Frame-rate independent exponential smoothing
+    // Exponential smoothing
     const lerpRate = 1 - Math.exp(-6 * delta);
     this.mouse.x += (this.targetMouse.x - this.mouse.x) * lerpRate;
     this.mouse.y += (this.targetMouse.y - this.mouse.y) * lerpRate;
     this.scrollProgress += (this.targetScroll - this.scrollProgress) * lerpRate;
 
     if (this.apertureGroup) {
-      // Gentle cinematic breathing + mouse tilt
       this.apertureGroup.rotation.y = this.mouse.x * 0.45 + (elapsedTime * 0.08);
       this.apertureGroup.rotation.x = -this.mouse.y * 0.35 + (Math.sin(elapsedTime * 0.5) * 0.05);
       this.apertureGroup.rotation.z = Math.cos(elapsedTime * 0.3) * 0.04;
 
-      // Smooth scroll parallax translation
       this.apertureGroup.position.y = (0.8 - (this.scrollProgress * 4.5));
       this.apertureGroup.position.z = -1 - (this.scrollProgress * 3);
 

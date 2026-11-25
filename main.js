@@ -1,10 +1,10 @@
 /**
  * AXE FILMS — MASTER FRONTEND ORCHESTRATOR
- * Upgraded for buttery-smooth Awwwards-grade motion, Lenis smooth scrolling,
- * magnetic physics cursor, and accurate inline/modal video playback.
+ * High-performance Lenis smooth scroll, accurate project media & previews,
+ * and inertial magnetic physics.
  */
 
-// 1. AUTHENTIC PROJECT DATA STORE (VERIFIED PATHS)
+// 1. AUTHENTIC PROJECT DATA STORE — 100% ACCURATE ASSETS & MEDIA
 const AXE_PROJECTS = [
   {
     id: 'prestige',
@@ -70,14 +70,16 @@ const AXE_PROJECTS = [
     category: 'brand',
     categoryLabel: 'Lifestyle & Social Movement',
     year: '2025',
-    thumbnail: 'Axefilms SMP 1-4-01.JPEG',
-    previewTag: '17 Digital Reels · Celebrity Cuts',
+    thumbnail: 'AURA_preview.jpg',
+    previewTag: '17 Digital Reels · Luxury Grooming',
     headline: 'Visual Identity in Motion for Modern Male Grooming',
     challenge: 'Establishing AURA as Pakistan\'s premier luxury grooming lounge with high-profile celebrity and influencer clientele.',
-    pivot: 'A 17-part short-form cinematic series emphasizing tactile craftsmanship: razor glides, steam, precision scissor cuts, and candid character vignettes.',
+    pivot: 'A 17-part short-form cinematic series emphasizing tactile craftsmanship: razor glides, steam, precision scissor cuts, and candid character vignettes inside the studio.',
     result: 'Massive organic engagement, driving fully booked VIP chair appointments across Multan and Islamabad.',
     stills: [
-      'Axefilms SMP 1-4-01.JPEG'
+      'AURA_preview.jpg',
+      'AURA_still_2.jpg',
+      'AURA_still_3.jpg'
     ],
     videoRef: 'AURA x Groom.mp4'
   },
@@ -88,32 +90,36 @@ const AXE_PROJECTS = [
     category: 'commercials',
     categoryLabel: 'Commercial Launch Campaign',
     year: '2024',
-    thumbnail: 'Axefilms SMP 1-4-02.JPEG',
-    previewTag: 'Date Night Series · 8 Deliverables',
+    thumbnail: 'AUOR_preview.jpg',
+    previewTag: 'Grand Opening & Date Night Series',
     headline: 'From Grocery Run to "Date Night with AUOR"',
     challenge: 'Breaking through the noise of discount supermarket advertising with a fresh emotional angle.',
     pivot: 'Conceived the "Date Night with AUOR" narrative series, highlighting late-night culinary adventures, premium gourmet aisles, and human intimacy.',
-    result: 'Packed grand opening launch weekend and high brand recall.',
+    result: 'Packed grand opening launch weekend and record brand recall.',
     stills: [
-      'Axefilms SMP 1-4-02.JPEG'
+      'AUOR_preview.jpg',
+      'AUOR_still_2.jpg',
+      'AUOR_still_3.jpg'
     ],
-    videoRef: 'AUOR Supermarket/Date Night With AUOR 1.mp4'
+    videoRef: 'AUOR Supermarket/AUOR Grand Opening Revised.mp4'
   },
   {
     id: 'hashmi',
     title: 'Hashmi Eye Centre',
-    client: 'Hashmi Medical Institute',
+    client: 'Hashmi Medical & Laser Eye Centre',
     category: 'case',
     categoryLabel: 'Healthcare & Precision Film',
     year: '2024',
-    thumbnail: 'IMG_3790.PNG',
-    previewTag: 'Macro Cinematography · Human Story',
+    thumbnail: 'Hashmi_preview.jpg',
+    previewTag: 'Ophthalmic Microsurgery · Human Story',
     headline: 'The Science of Vision: Precision Meets Human Vulnerability',
     challenge: 'Medical videos are often clinical, sterile, and intimidating for prospective patients.',
-    pivot: 'Framed ophthalmic microsurgery as an art form: ultra-macro optics, warm natural lighting, and patient emotional testimonies before and after sight restoration.',
+    pivot: 'Framed ophthalmic microsurgery as an art form: ultra-macro optics, warm natural lighting, and Dr. Safdar Hashmi\'s emotional patient journeys before and after sight restoration.',
     result: 'Overwhelming patient trust and widespread institutional recognition.',
     stills: [
-      'IMG_3790.PNG'
+      'Hashmi_preview.jpg',
+      'Hashmi_still_2.jpg',
+      'Hashmi_still_3.jpg'
     ],
     videoRef: 'Hashmi Eye Centre.mp4'
   }
@@ -136,6 +142,7 @@ class AxeFilmsApp {
     this.soundToggleBtn = document.getElementById('sound-toggle-btn');
     this.fstopSlider = document.getElementById('fstop-slider');
     this.fstopReadout = document.getElementById('fstop-readout');
+    this.heroBgVideo = document.querySelector('.hero-bg-video');
 
     // Smooth Cursor Physics
     this.mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -165,15 +172,31 @@ class AxeFilmsApp {
     this.startLiveStudioClock();
   }
 
-  // A. LENIS BUTTERY SMOOTH SCROLLING
+  // A. LENIS BUTTERY SMOOTH SCROLL (SYNCED TO THREE.JS & GPU PAUSE)
   setupLenisSmoothScroll() {
     if (typeof Lenis !== 'undefined') {
       this.lenis = new Lenis({
-        duration: 1.25,
+        duration: 1.15,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: 'vertical',
         smoothWheel: true,
-        wheelMultiplier: 0.95
+        wheelMultiplier: 1.0
+      });
+
+      // Synchronize Lenis scroll with Three.js and Hero background video
+      this.lenis.on('scroll', (e) => {
+        if (window.axeThree) {
+          window.axeThree.setScrollProgress(e.progress);
+        }
+
+        // Pause hero background video when scrolled offscreen to conserve CPU/GPU
+        if (this.heroBgVideo) {
+          if (e.scroll > window.innerHeight * 1.1) {
+            if (!this.heroBgVideo.paused) this.heroBgVideo.pause();
+          } else {
+            if (this.heroBgVideo.paused) this.heroBgVideo.play().catch(() => {});
+          }
+        }
       });
 
       const raf = (time) => {
@@ -187,12 +210,12 @@ class AxeFilmsApp {
   // B. ASSET LOADING SEQUENCE & 3D APERTURE REVEAL
   startAssetLoadingSequence() {
     const criticalAssets = [
-      'Axefilms SMP 1-4-01.JPEG',
-      'Axefilms SMP 1-4-02.JPEG',
+      'AURA_preview.jpg',
+      'AUOR_preview.jpg',
+      'Hashmi_preview.jpg',
       'Axefilms SMP 1-4-03.JPEG',
       'Axefilms SMP 1-4-06.jpeg',
-      'Prestige/Images/IMG_2912.JPG',
-      'Prestige/Images/IMG_2915.JPG'
+      'Prestige/Images/IMG_2912.JPG'
     ];
 
     let loadedCount = 0;
@@ -210,7 +233,7 @@ class AxeFilmsApp {
 
       if (displayProgress >= 100) {
         clearInterval(progressInterval);
-        setTimeout(() => this.revealWebsite(), 350);
+        setTimeout(() => this.revealWebsite(), 300);
       }
     }, 16);
 
@@ -228,7 +251,7 @@ class AxeFilmsApp {
     }
 
     setTimeout(() => { loadedCount++; }, 300);
-    setTimeout(() => { loadedCount = totalAssets; }, 3000);
+    setTimeout(() => { loadedCount = totalAssets; }, 2800);
   }
 
   revealWebsite() {
@@ -236,20 +259,19 @@ class AxeFilmsApp {
     if (window.axeThree) window.axeThree.triggerOpeningSequence();
     if (this.preloader) this.preloader.classList.add('loaded');
 
-    // Trigger hero reveal
     const heroElements = document.querySelectorAll('.hero-badge, .hero-title .title-row, .hero-footer-row');
     heroElements.forEach((el, index) => {
       el.style.opacity = '0';
-      el.style.transform = 'translateY(30px)';
-      el.style.transition = `all 0.9s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + index * 0.12}s`;
+      el.style.transform = 'translate3d(0, 30px, 0)';
+      el.style.transition = `all 0.9s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + index * 0.12}s`;
       setTimeout(() => {
         el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
+        el.style.transform = 'translate3d(0, 0, 0)';
       }, 50);
     });
   }
 
-  // C. INERTIAL MAGNETIC CURSOR WITH KINETIC SQUISH & BUTTON MAGNETISM
+  // C. HIGH-PERFORMANCE INERTIAL MAGNETIC CURSOR
   setupMagneticCursor() {
     window.addEventListener('mousemove', (e) => {
       this.mouse.x = e.clientX;
@@ -257,9 +279,8 @@ class AxeFilmsApp {
       if (this.cursorDot) {
         this.cursorDot.style.transform = `translate3d(${this.mouse.x}px, ${this.mouse.y}px, 0)`;
       }
-    });
+    }, { passive: true });
 
-    // Inertial Follower Animation Loop
     const updateCursorFollower = () => {
       this.cursorVelocity.x = this.mouse.x - this.prevMouse.x;
       this.cursorVelocity.y = this.mouse.y - this.prevMouse.y;
@@ -269,15 +290,12 @@ class AxeFilmsApp {
       const speed = Math.hypot(this.cursorVelocity.x, this.cursorVelocity.y);
       const angle = Math.atan2(this.cursorVelocity.y, this.cursorVelocity.x);
 
-      // Smooth lerp
-      this.cursor.x += (this.mouse.x - this.cursor.x) * 0.18;
-      this.cursor.y += (this.mouse.y - this.cursor.y) * 0.18;
+      this.cursor.x += (this.mouse.x - this.cursor.x) * 0.2;
+      this.cursor.y += (this.mouse.y - this.cursor.y) * 0.2;
 
       if (this.cursorFollower) {
-        // Kinetic stretch along velocity
         const scaleX = 1 + Math.min(speed * 0.012, 0.45);
         const scaleY = 1 - Math.min(speed * 0.01, 0.3);
-
         this.cursorFollower.style.transform = `translate3d(${this.cursor.x}px, ${this.cursor.y}px, 0) translate(-50%, -50%) rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
       }
 
@@ -285,24 +303,23 @@ class AxeFilmsApp {
     };
     requestAnimationFrame(updateCursorFollower);
 
-    // True Magnetic Attraction on Buttons
+    // Magnetic Attraction
     const magneticElements = document.querySelectorAll('.hero-play-reel-btn, .cta-header-btn, .filter-btn, .submit-commission-btn, .case-play-btn, .sound-toggle-btn');
     magneticElements.forEach((el) => {
       el.addEventListener('mousemove', (e) => {
         const rect = el.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
-        const dx = (e.clientX - centerX) * 0.3;
-        const dy = (e.clientY - centerY) * 0.3;
+        const dx = (e.clientX - centerX) * 0.25;
+        const dy = (e.clientY - centerY) * 0.25;
         el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
-      });
+      }, { passive: true });
 
       el.addEventListener('mouseleave', () => {
         el.style.transform = 'translate3d(0, 0, 0)';
       });
     });
 
-    // Cursor States
     document.addEventListener('mouseover', (e) => {
       const target = e.target.closest('a, button, .work-row, .lookbook-photo-card, .reel-card, .scope-pill, .case-video-box');
       if (target) {
@@ -397,7 +414,7 @@ class AxeFilmsApp {
       previewPos.y += (e.clientY - 120 - previewPos.y) * 0.25;
 
       this.hoverPreview.style.transform = `translate3d(${previewPos.x}px, ${previewPos.y}px, 0) translate(-50%, -50%)`;
-    });
+    }, { passive: true });
 
     document.addEventListener('mouseover', (e) => {
       const row = e.target.closest('.work-row');
@@ -426,7 +443,6 @@ class AxeFilmsApp {
       if (video && trigger) {
         trigger.addEventListener('click', () => {
           if (video.paused) {
-            // Pause any other playing video first
             document.querySelectorAll('video').forEach((v) => {
               if (v !== video && !v.classList.contains('hero-bg-video')) v.pause();
             });
@@ -500,7 +516,7 @@ class AxeFilmsApp {
       if (!isDown) return;
       e.preventDefault();
       const x = e.pageX - container.offsetLeft;
-      const walk = (x - startX) * 1.8; // scroll multiplier
+      const walk = (x - startX) * 1.8;
       container.scrollLeft = scrollLeft - walk;
     });
   }
@@ -517,7 +533,6 @@ class AxeFilmsApp {
       });
     });
 
-    // Multi-film playlist channel buttons
     const channelBtns = document.querySelectorAll('.playlist-channel-btn');
     channelBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
